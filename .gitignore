@@ -1,3 +1,7 @@
+# ai coding工具相关
+.claude/
+.codex/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
