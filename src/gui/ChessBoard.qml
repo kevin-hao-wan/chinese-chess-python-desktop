@@ -94,24 +94,35 @@ Item {
         }
     }
 
-    // Selection highlight
+    // Selection highlight - matches Piece.qml positioning
     Rectangle {
-        visible: gameBridge && gameBridge.selectedPos !== undefined && gameBridge.selectedPos !== null
-        x: gameBridge && gameBridge.selectedPos ? gameBridge.selectedPos[1] * cellWidth : 0
-        y: gameBridge && gameBridge.selectedPos ? gameBridge.selectedPos[0] * cellHeight : 0
+        visible: gameBridge && gameBridge.selectedRow >= 0
+        x: gameBridge.selectedCol >= 0 ? gameBridge.selectedCol * cellWidth : 0
+        y: gameBridge.selectedRow >= 0 ? gameBridge.selectedRow * cellHeight : 0
         width: cellWidth
         height: cellHeight
         color: "transparent"
         border.color: "yellow"
         border.width: 4
+
+        // Inner circle highlight matching piece size
+        Rectangle {
+            anchors.centerIn: parent
+            width: parent.width * 0.8
+            height: parent.height * 0.8
+            radius: width / 2
+            color: "transparent"
+            border.color: "yellow"
+            border.width: 3
+        }
     }
 
     // Legal move markers
     Repeater {
         model: gameBridge ? gameBridge.legalMoves : []
         Rectangle {
-            x: modelData[1] * cellWidth + cellWidth / 2 - cellWidth / 6
-            y: modelData[0] * cellHeight + cellHeight / 2 - cellHeight / 6
+            x: modelData.col * cellWidth + cellWidth / 2 - width / 2
+            y: modelData.row * cellHeight + cellHeight / 2 - height / 2
             width: cellWidth / 3
             height: cellHeight / 3
             radius: width / 2

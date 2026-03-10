@@ -48,15 +48,21 @@ class GameBridge(QObject):
 
     currentTurn = Property(str, _get_turn_text, notify=turnChanged)
 
-    def _get_selected_pos(self) -> Any:
-        return self._selected_pos
+    def _get_selected_row(self) -> int:
+        return self._selected_pos[0] if self._selected_pos else -1
 
-    selectedPos = Property('QVariant', _get_selected_pos, notify=selectedPosChanged)
+    selectedRow = Property(int, _get_selected_row, notify=selectedPosChanged)
 
-    def _get_legal_moves(self) -> List[Pos]:
-        return self._legal_moves
+    def _get_selected_col(self) -> int:
+        return self._selected_pos[1] if self._selected_pos else -1
 
-    legalMoves = Property('QVariant', _get_legal_moves, notify=legalMovesChanged)
+    selectedCol = Property(int, _get_selected_col, notify=selectedPosChanged)
+
+    def _get_legal_moves(self) -> List[dict]:
+        """将合法走法转换为QML可用的字典列表"""
+        return [{'row': r, 'col': c} for r, c in self._legal_moves]
+
+    legalMoves = Property(list, _get_legal_moves, notify=legalMovesChanged)
 
     @Slot(int, int)
     def onCellClicked(self, row: int, col: int):
@@ -64,22 +70,41 @@ class GameBridge(QObject):
         if self._board.current_turn != Color.RED:
             return
 
+        clicked_piece = self._board.get_piece(row, col)
+
         if self._selected_pos is None:
-            piece = self._board.get_piece(row, col)
-            if piece and piece.color == Color.RED:
-                self._selected_pos = (row, col)
-                generator = MoveGenerator(self._board)
-                all_moves = generator.get_all_legal_moves(Color.RED)
-                self._legal_moves = [to for from_pos, to in all_moves if from_pos == self._selected_pos]
-                self.selectedPosChanged.emit()
-                self.legalMovesChanged.emit()
+            # 无选中时，只能选中己方棋子
+            if clicked_piece and clicked_piece.color == Color.RED:
+                self._select_piece(row, col)
         else:
+            # 已有选中
             if (row, col) in self._legal_moves:
+                # 点击合法走法，执行移动
                 self._execute_move(self._selected_pos, (row, col))
-            self._selected_pos = None
-            self._legal_moves = []
-            self.selectedPosChanged.emit()
-            self.legalMovesChanged.emit()
+                self._clear_selection()
+            elif clicked_piece and clicked_piece.color == Color.RED:
+                # 点击另一个己方棋子，切换选择
+                self._clear_selection()
+                self._select_piece(row, col)
+            else:
+                # 点击非法位置，取消选择
+                self._clear_selection()
+
+    def _select_piece(self, row: int, col: int):
+        """选中指定位置的棋子"""
+        self._selected_pos = (row, col)
+        generator = MoveGenerator(self._board)
+        all_moves = generator.get_all_legal_moves(Color.RED)
+        self._legal_moves = [to for from_pos, to in all_moves if from_pos == self._selected_pos]
+        self.selectedPosChanged.emit()
+        self.legalMovesChanged.emit()
+
+    def _clear_selection(self):
+        """清除当前选择"""
+        self._selected_pos = None
+        self._legal_moves = []
+        self.selectedPosChanged.emit()
+        self.legalMovesChanged.emit()
 
     def _execute_move(self, from_pos: Pos, to_pos: Pos):
         """执行走法并触发AI"""
