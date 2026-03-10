@@ -62,3 +62,21 @@ class Board:
                 if piece and piece.color == color:
                     result.append(((row, col), piece))
         return result
+
+    def move_piece(self, from_pos: tuple[int, int], to_pos: tuple[int, int]) -> Optional[Piece]:
+        """执行走法，返回被吃的棋子（如果有）"""
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+        piece = self.grid[from_row][from_col]
+        captured = self.grid[to_row][to_col]
+        self.grid[to_row][to_col] = piece
+        self.grid[from_row][from_col] = None
+        return captured
+
+    def undo_move(self, from_pos: tuple[int, int], to_pos: tuple[int, int], captured: Optional[Piece]):
+        """撤销走法，恢复被吃的棋子"""
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+        piece = self.grid[to_row][to_col]
+        self.grid[from_row][from_col] = piece
+        self.grid[to_row][to_col] = captured

@@ -82,3 +82,40 @@ def test_get_pieces_red():
     assert len(pieces) == 16
     for pos, piece in pieces:
         assert piece.color == Color.RED
+
+
+def test_move_piece_updates_grid():
+    board = Board()
+    piece = board.get_piece(0, 0)  # Red rook
+    board.move_piece((0, 0), (0, 2))
+    assert board.get_piece(0, 0) is None
+    assert board.get_piece(0, 2) == piece
+
+
+def test_move_piece_returns_captured_piece():
+    from src.game.pieces import Piece, PieceType
+    board = Board()
+    # 设置一个可以吃子的局面
+    captured_piece = Piece(Color.BLACK, PieceType.PAWN)
+    board.grid[3][0] = captured_piece
+    board.move_piece((0, 0), (3, 0))  # Red rook captures black pawn
+    assert board.get_piece(3, 0).color == Color.RED
+
+
+def test_undo_move_restores_position():
+    board = Board()
+    original_piece = board.get_piece(0, 0)
+    board.move_piece((0, 0), (0, 2))
+    board.undo_move((0, 0), (0, 2), None)
+    assert board.get_piece(0, 0) == original_piece
+    assert board.get_piece(0, 2) is None
+
+
+def test_undo_move_restores_captured_piece():
+    from src.game.pieces import Piece, PieceType
+    board = Board()
+    captured = Piece(Color.BLACK, PieceType.PAWN)
+    board.grid[3][0] = captured
+    board.move_piece((0, 0), (3, 0))
+    board.undo_move((0, 0), (3, 0), captured)
+    assert board.get_piece(3, 0) == captured
