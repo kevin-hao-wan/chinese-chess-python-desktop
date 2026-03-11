@@ -136,14 +136,15 @@ class GameBridge(QObject):
             engine = AIEngine(depth=3)
             move = engine.decide(self._board)
             self._board.move_piece(move[0], move[1])
-            self._board.current_turn = Color.RED
+            self._board.current_turn = self._player_color
             self.boardChanged.emit()
             self.turnChanged.emit()
 
             generator = MoveGenerator(self._board)
-            if generator.is_checkmate(Color.RED):
-                self.gameOver.emit("黑方胜！")
-            elif generator.is_stalemate(Color.RED):
+            if generator.is_checkmate(self._player_color):
+                winner = "红方胜！" if self._player_color == Color.BLACK else "黑方胜！"
+                self.gameOver.emit(winner)
+            elif generator.is_stalemate(self._player_color):
                 self.gameOver.emit("平局（困毙）")
         except Exception as e:
             print(f"AI错误: {e}")
