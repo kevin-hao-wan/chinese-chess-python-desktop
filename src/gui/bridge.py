@@ -178,10 +178,14 @@ class GameBridge(QObject):
         self.turnChanged.emit()
 
     def _get_player_color(self) -> int:
-        return self._player_color.value
+        """获取玩家颜色，返回 0=红方, 1=黑方"""
+        return 0 if self._player_color == Color.RED else 1
 
     def _set_player_color(self, color_value: int):
-        self._player_color = Color(color_value)
+        """设置玩家颜色，color_value: 0=红方, 1=黑方"""
+        # 将整数映射到 Color 枚举
+        color_map = {0: Color.RED, 1: Color.BLACK}
+        self._player_color = color_map.get(color_value, Color.RED)
         self.playerColorChanged.emit()
 
     playerColor = Property(int, _get_player_color, _set_player_color, notify=playerColorChanged)

@@ -6,7 +6,7 @@ from src.game.pieces import Color
 def test_player_color_defaults_to_red():
     """测试 player_color 默认为红方"""
     bridge = GameBridge()
-    assert bridge.playerColor == Color.RED.value
+    assert bridge.playerColor == 0  # 0 = 红方
 
 
 def test_on_cell_clicked_respects_player_color():
@@ -54,10 +54,10 @@ def test_new_game_accepts_player_color():
     """测试 newGame 接受 player_color 参数"""
     bridge = GameBridge()
 
-    # 设置玩家为黑方
-    bridge.newGame(Color.BLACK.value)
+    # 设置玩家为黑方 (1 = 黑方)
+    bridge.newGame(1)
 
-    assert bridge.playerColor == Color.BLACK.value
+    assert bridge.playerColor == 1  # 1 = 黑方
     assert bridge._board.current_turn == Color.RED  # AI（红方）先手
 
 
