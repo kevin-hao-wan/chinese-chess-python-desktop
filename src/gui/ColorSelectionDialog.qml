@@ -34,5 +34,10 @@ Dialog {
 
     onAccepted: {
         colorSelected(selectedColor)
+        appSettings.lastSelectedColor = selectedColor
+    }
+
+    Component.onCompleted: {
+        selectedColor = appSettings.lastSelectedColor
     }
 }

@@ -1,6 +1,7 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
+import QtCore
 
 ApplicationWindow {
     id: window
@@ -8,6 +9,11 @@ ApplicationWindow {
     width: 600
     height: 750
     title: "中国象棋"
+
+    Settings {
+        id: appSettings
+        property int lastSelectedColor: 0  // 默认红方
+    }
 
     ColumnLayout {
         anchors.fill: parent
