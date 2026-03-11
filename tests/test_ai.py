@@ -45,12 +45,14 @@ class TestAIEngine:
 
         from src.game.rules import MoveGenerator
         generator = MoveGenerator(board)
-        black_moves = generator.get_all_legal_moves(Color.BLACK)
+        # AI 走当前轮到的一方（初始为红方）
+        current_turn = board.current_turn
+        legal_moves = generator.get_all_legal_moves(current_turn)
 
         move = engine.decide(board)
 
-        # 应该是黑方的合法走法之一
-        assert move in black_moves
+        # 应该是当前回合方的合法走法之一
+        assert move in legal_moves
 
     def test_ai_finds_capture(self):
         """测试AI能找到吃子走法（使用初始局面）"""
@@ -59,11 +61,12 @@ class TestAIEngine:
         engine = AIEngine(depth=1)  # 使用深度1避免递归问题
         move = engine.decide(board)
 
-        # AI应该返回一个合法的黑方走法
+        # AI应该返回当前回合方的合法走法
         from src.game.rules import MoveGenerator
         generator = MoveGenerator(board)
-        black_moves = generator.get_all_legal_moves(Color.BLACK)
-        assert move in black_moves
+        current_turn = board.current_turn
+        legal_moves = generator.get_all_legal_moves(current_turn)
+        assert move in legal_moves
 
     def test_ai_avoids_suicide(self):
         """测试AI避免送将"""

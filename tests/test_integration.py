@@ -144,10 +144,12 @@ class TestAIGameplay:
         engine = AIEngine(depth=1)
         generator = MoveGenerator(board)
 
-        black_moves = generator.get_all_legal_moves(Color.BLACK)
+        # AI 走当前轮到的一方（初始为红方）
+        current_turn = board.current_turn
+        legal_moves = generator.get_all_legal_moves(current_turn)
         ai_move = engine.decide(board)
 
-        assert ai_move in black_moves
+        assert ai_move in legal_moves
 
     def test_ai_avoids_illegal_moves(self):
         """测试AI不会选择非法走法"""
@@ -157,16 +159,18 @@ class TestAIGameplay:
 
         # AI应该只返回合法走法
         for _ in range(3):
-            black_moves = generator.get_all_legal_moves(Color.BLACK)
-            if not black_moves:
+            current_turn = board.current_turn
+            legal_moves = generator.get_all_legal_moves(current_turn)
+            if not legal_moves:
                 break
 
             ai_move = engine.decide(board)
-            assert ai_move in black_moves
+            assert ai_move in legal_moves
 
             # 执行AI走法
             board.move_piece(ai_move[0], ai_move[1])
-            board.current_turn = Color.RED
+            # 切换回合
+            board.current_turn = Color.BLACK if current_turn == Color.RED else Color.RED
 
             # 红方走一步
             red_moves = generator.get_all_legal_moves(Color.RED)
