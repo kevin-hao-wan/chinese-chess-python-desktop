@@ -1,6 +1,6 @@
 """Python-QML桥接类"""
 from typing import List, Optional, Any
-from PySide6.QtCore import QObject, Signal, Slot, Property, QUrl
+from PySide6.QtCore import QObject, Signal, Slot, Property, QUrl, QTimer
 
 from src.game.board import Board
 from src.game.pieces import Color, PieceType
@@ -143,12 +143,24 @@ class GameBridge(QObject):
         except Exception as e:
             print(f"AI错误: {e}")
 
-    @Slot()
-    def newGame(self):
+    @Slot(int)
+    def newGame(self, player_color_value: int = None):
         """新游戏"""
+        # 设置玩家颜色（如果传入）
+        if player_color_value is not None:
+            self._set_player_color(player_color_value)
+
         self._board = Board()
         self._selected_pos = None
         self._legal_moves = []
+
+        # 如果玩家选择黑方，AI（红方）先手
+        if self._player_color == Color.BLACK:
+            self._board.current_turn = Color.RED
+            QTimer.singleShot(100, self._ai_move)
+        else:
+            self._board.current_turn = Color.RED
+
         self.boardChanged.emit()
         self.turnChanged.emit()
 

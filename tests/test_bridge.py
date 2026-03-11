@@ -48,3 +48,14 @@ def test_select_piece_uses_player_color_for_moves():
 
         # 验证使用 player_color (BLACK) 获取走法
         mock_gen.get_all_legal_moves.assert_called_once_with(Color.BLACK)
+
+
+def test_new_game_accepts_player_color():
+    """测试 newGame 接受 player_color 参数"""
+    bridge = GameBridge()
+
+    # 设置玩家为黑方
+    bridge.newGame(Color.BLACK.value)
+
+    assert bridge.playerColor == Color.BLACK.value
+    assert bridge._board.current_turn == Color.RED  # AI（红方）先手
