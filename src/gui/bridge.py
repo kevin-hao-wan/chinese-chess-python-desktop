@@ -19,12 +19,14 @@ class GameBridge(QObject):
     gameOver = Signal(str)
     selectedPosChanged = Signal()
     legalMovesChanged = Signal()
+    playerColorChanged = Signal()
 
     def __init__(self):
         super().__init__()
         self._board = Board()
         self._selected_pos: Optional[Pos] = None
         self._legal_moves: List[Pos] = []
+        self._player_color = Color.RED
 
     def _get_board_data(self) -> List[dict]:
         """将棋盘转换为QML可用的列表"""
@@ -149,3 +151,12 @@ class GameBridge(QObject):
         self._legal_moves = []
         self.boardChanged.emit()
         self.turnChanged.emit()
+
+    def _get_player_color(self) -> int:
+        return self._player_color.value
+
+    def _set_player_color(self, color_value: int):
+        self._player_color = Color(color_value)
+        self.playerColorChanged.emit()
+
+    playerColor = Property(int, _get_player_color, _set_player_color, notify=playerColorChanged)
