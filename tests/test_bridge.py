@@ -59,3 +59,25 @@ def test_new_game_accepts_player_color():
 
     assert bridge.playerColor == Color.BLACK.value
     assert bridge._board.current_turn == Color.RED  # AI（红方）先手
+
+
+def test_execute_move_switches_to_ai_color():
+    """测试 _execute_move 正确切换到 AI 颜色"""
+    bridge = GameBridge()
+    bridge._player_color = Color.BLACK  # 玩家执黑
+    bridge._board.current_turn = Color.BLACK
+
+    from unittest.mock import patch, MagicMock
+
+    with patch.object(bridge._board, 'move_piece'):
+        with patch.object(bridge, '_ai_move'):
+            with patch('src.gui.bridge.MoveGenerator') as mock_gen_class:
+                mock_gen = MagicMock()
+                mock_gen_class.return_value = mock_gen
+                mock_gen.is_checkmate.return_value = False
+                mock_gen.is_stalemate.return_value = False
+
+                bridge._execute_move((0, 0), (0, 1))
+
+                # 玩家（黑）走完后，应该切换到红方（AI）
+                assert bridge._board.current_turn == Color.RED

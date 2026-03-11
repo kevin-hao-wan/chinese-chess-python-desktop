@@ -110,16 +110,21 @@ class GameBridge(QObject):
 
     def _execute_move(self, from_pos: Pos, to_pos: Pos):
         """执行走法并触发AI"""
+        # 计算AI颜色
+        ai_color = Color.BLACK if self._player_color == Color.RED else Color.RED
+
         self._board.move_piece(from_pos, to_pos)
-        self._board.current_turn = Color.BLACK
+        self._board.current_turn = ai_color
         self.boardChanged.emit()
         self.turnChanged.emit()
 
         generator = MoveGenerator(self._board)
-        if generator.is_checkmate(Color.BLACK):
-            self.gameOver.emit("红方胜！")
+        if generator.is_checkmate(ai_color):
+            # 根据 player_color 判断胜者
+            winner = "红方胜！" if self._player_color == Color.RED else "黑方胜！"
+            self.gameOver.emit(winner)
             return
-        if generator.is_stalemate(Color.BLACK):
+        if generator.is_stalemate(ai_color):
             self.gameOver.emit("平局（困毙）")
             return
 
