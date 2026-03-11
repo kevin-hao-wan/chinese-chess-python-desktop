@@ -96,7 +96,7 @@ class GameBridge(QObject):
         """选中指定位置的棋子"""
         self._selected_pos = (row, col)
         generator = MoveGenerator(self._board)
-        all_moves = generator.get_all_legal_moves(Color.RED)
+        all_moves = generator.get_all_legal_moves(self._player_color)
         self._legal_moves = [to for from_pos, to in all_moves if from_pos == self._selected_pos]
         self.selectedPosChanged.emit()
         self.legalMovesChanged.emit()

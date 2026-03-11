@@ -29,3 +29,22 @@ def test_on_cell_clicked_respects_player_color():
         bridge.onCellClicked(0, 0)
         assert bridge.selectedRow == 0
         assert bridge.selectedCol == 0
+
+
+def test_select_piece_uses_player_color_for_moves():
+    """测试 _select_piece 根据 player_color 获取合法走法"""
+    bridge = GameBridge()
+    bridge._player_color = Color.BLACK
+    bridge._board.current_turn = Color.BLACK
+
+    from unittest.mock import patch, MagicMock
+
+    with patch('src.gui.bridge.MoveGenerator') as mock_gen_class:
+        mock_gen = MagicMock()
+        mock_gen_class.return_value = mock_gen
+        mock_gen.get_all_legal_moves.return_value = [((0, 0), (0, 1))]
+
+        bridge._select_piece(0, 0)
+
+        # 验证使用 player_color (BLACK) 获取走法
+        mock_gen.get_all_legal_moves.assert_called_once_with(Color.BLACK)
