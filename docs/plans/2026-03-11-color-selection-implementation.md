@@ -811,4 +811,4 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>"
 
 - 设计文档: `docs/plans/2026-03-11-color-selection-design.md`
 - OpenSpec 变更: `openspec/changes/color-selection/`
-- 需求文档: `requirement.md`
+- 需求文档: `openspec/changes/color-selection/requirement.md`
