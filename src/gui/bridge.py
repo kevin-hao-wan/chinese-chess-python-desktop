@@ -46,7 +46,14 @@ class GameBridge(QObject):
     boardData = Property(list, _get_board_data, notify=boardChanged)
 
     def _get_turn_text(self) -> str:
-        return "红方走棋" if self._board.current_turn == Color.RED else "黑方思考中"
+        """根据玩家颜色和当前回合返回回合文本"""
+        current = self._board.current_turn
+        if current == self._player_color:
+            # 玩家回合
+            return "红方走棋" if current == Color.RED else "黑方走棋"
+        else:
+            # AI 回合
+            return "红方思考中" if current == Color.RED else "黑方思考中"
 
     currentTurn = Property(str, _get_turn_text, notify=turnChanged)
 

@@ -107,3 +107,26 @@ def test_ai_move_switches_to_player_color():
 
                 # AI（红）走完后，应该切换回玩家（黑）
                 assert bridge._board.current_turn == Color.BLACK
+
+
+def test_turn_text_shows_ai_thinking():
+    """测试回合文本显示 AI 思考中"""
+    bridge = GameBridge()
+
+    # 玩家执红，红方回合
+    bridge._player_color = Color.RED
+    bridge._board.current_turn = Color.RED
+    assert bridge.currentTurn == "红方走棋"
+
+    # 切换到黑方（AI）
+    bridge._board.current_turn = Color.BLACK
+    assert bridge.currentTurn == "黑方思考中"
+
+    # 玩家执黑，黑方回合
+    bridge._player_color = Color.BLACK
+    bridge._board.current_turn = Color.BLACK
+    assert bridge.currentTurn == "黑方走棋"
+
+    # 切换到红方（AI）
+    bridge._board.current_turn = Color.RED
+    assert bridge.currentTurn == "红方思考中"
