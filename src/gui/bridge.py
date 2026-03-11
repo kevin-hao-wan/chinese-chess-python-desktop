@@ -69,14 +69,14 @@ class GameBridge(QObject):
     @Slot(int, int)
     def onCellClicked(self, row: int, col: int):
         """处理棋盘点击"""
-        if self._board.current_turn != Color.RED:
+        if self._board.current_turn != self._player_color:
             return
 
         clicked_piece = self._board.get_piece(row, col)
 
         if self._selected_pos is None:
             # 无选中时，只能选中己方棋子
-            if clicked_piece and clicked_piece.color == Color.RED:
+            if clicked_piece and clicked_piece.color == self._player_color:
                 self._select_piece(row, col)
         else:
             # 已有选中
@@ -84,7 +84,7 @@ class GameBridge(QObject):
                 # 点击合法走法，执行移动
                 self._execute_move(self._selected_pos, (row, col))
                 self._clear_selection()
-            elif clicked_piece and clicked_piece.color == Color.RED:
+            elif clicked_piece and clicked_piece.color == self._player_color:
                 # 点击另一个己方棋子，切换选择
                 self._clear_selection()
                 self._select_piece(row, col)
