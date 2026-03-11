@@ -45,9 +45,20 @@ ApplicationWindow {
             Layout.alignment: Qt.AlignHCenter
             onClicked: {
                 resultText.visible = false;
-                if (gameBridge) {
-                    gameBridge.newGame();
-                }
+                colorDialog.open();
+            }
+        }
+    }
+
+    // Color selection dialog
+    ColorSelectionDialog {
+        id: colorDialog
+        parent: Overlay.overlay
+        anchors.centerIn: parent
+
+        onColorSelected: function(colorValue) {
+            if (gameBridge) {
+                gameBridge.newGame(colorValue);
             }
         }
     }
